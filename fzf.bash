@@ -6,7 +6,7 @@ function candidates() {
 
 function candidate_selector_fzf() {
     query=$1
-    candidates | fzf -q "$query" --select-1
+    candidates | fzf -e -i -q "$query" --select-1 --cycle --preview 'pass show {}'
 }
 
 function usage() {
@@ -34,8 +34,10 @@ query="$@"
 res=$(candidate_selector_fzf "$query")
 if [ -n "$res" ]; then
     [ $select_only -ne 0 ] && echo "$res" && exit 0
-    pass show "$res" | tail -n +2 || exit $?
-    pass show -c "$res"
+      pass show "$res" | tail -n +2 || exit $?
+      pass show -c "$res"
+      echo -e "\n\npass otp -c $res"
+      pass otp "$res"
 else
     exit 1
 fi
